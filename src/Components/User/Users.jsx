@@ -1,22 +1,37 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import User from './User'
 import AddUser from './AddUser'
-import EditUser from './EditUser'
+import userAxios from "./userAxios";
+import Modal from '../Modal/Modal'
+import EditUser from "./EditUser";
 class Users extends Component {
 
-    constructor() {
-        super()
+    constructor(props) {
+        super(props);
         this.state = {
-            usersList: []
+            usersList: [],
+            show: false,
+            currentUser:{}
         }
     }
 
 
-    componentDidMount() {
-        fetch('http://localhost:5000/user/getall')
-            .then(response => response.json())
-            .then(users => { this.setState({ usersList: users }) });
-    }
+    componentDidMount = async () => {
+        try {
+            const {data} = await userAxios.get(`/getall`);
+            this.setState({usersList: data})
+        } catch (error) {
+            console.log('error on delete', error);
+        }
+    };
+
+    showModal = () => {
+        this.setState({ show: true });
+    };
+
+    hideModal = () => {
+        this.setState({ show: false });
+    };
 
     createTable = (user) => {
         return (<User
@@ -24,27 +39,35 @@ class Users extends Component {
             id={user.id}
             username={user.username}
             email={user.mail}
-            role={user.role} />)
-    }
+            role={user.role}
+            edit={this.handleEdit}/>)
+    };
 
+    handleEdit = (user) => {
+        console.log("Edit", user);
+        this.setState({currentUser: user});
+        this.showModal()
+    };
 
     render() {
         return (
             <div>
-                <AddUser />
-                <table className = "container table table-striped mt-5">
+                <AddUser/>
+                <table className="container table table-striped mt-5">
                     <thead className="thead-dark">
-                        <tr>
-                            <th>Id</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Edit</th>
-                        </tr>
+                    <tr>
+                        <th>Id</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Edit</th>
+                    </tr>
                     </thead>
                     {this.state.usersList && <tbody>{this.state.usersList.map(user => this.createTable(user))}</tbody>}
                 </table>
-                <EditUser />
+                <Modal show={this.state.show} handleClose={this.hideModal}>
+                    <EditUser handleClose={this.hideModal}  user={this.state.currentUser}/>
+                </Modal>
             </div>
         )
     }
