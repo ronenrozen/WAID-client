@@ -2,17 +2,24 @@ import React, {Component} from 'react'
 import userAxios from './userAxios'
 import Input from '../Utils/Input'
 import Select from '../Utils/Select'
+import Button from "../Utils/Button";
 
-
+const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+const emailRegex = new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g);
 export default class AddUser extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             username: "",
             email: "",
             role: "",
             password: "",
-            status: ""
+            status: "",
+            wrongEmailFormatMessage: false,
+            wrongPasswordFormatMessage: false,
+            missingFields: false,
+            userAdded:false,
+            duplicateEmail:false
         }
     }
 
@@ -22,32 +29,54 @@ export default class AddUser extends Component {
         })
     };
 
-    componentDidUpdate = () => {
-        console.log('updated, current state is: ', this.state);
-    };
-
     handleAdd = async () => {
+        this.setState({
+            wrongEmailFormatMessage: false,
+            wrongPasswordFormatMessage: false,
+            missingFields: false,
+            userAdded:false,
+            duplicateEmail:false
+        });
+        let isValid = true;
         if (this.state.username !== "" && this.state.email !== "" && this.state.password !== "" && this.state.role !== "") {
-            let intRole = this.convertRoleToInt();
-            let data = {
-                username: this.state.username,
-                password: this.state.password,
-                mail: this.state.email,
-                role: intRole
-            };
-            try {
-                await userAxios.post('adduser', data);
-                console.log('add user is finished');
-                console.log('this is the state before: ', this.state);
-                this.clearState();
-                console.log('clear is finished');
-                console.log('this is the state after: ', this.state);
-            } catch (error) {
-                console.log('error on add user', error);
+            if (!this.validateEmail()) {
+                isValid = false;
+                this.setState({wrongEmailFormatMessage: true})
+            }
+            if (!this.validatePassword()) {
+                isValid = false;
+                this.setState({wrongPasswordFormatMessage: true});
+            }
+            if (isValid) {
+                let intRole = this.convertRoleToInt();
+                let data = {
+                    username: this.state.username,
+                    password: this.state.password,
+                    mail: this.state.email,
+                    role: intRole
+                };
+                try {
+                    await userAxios.post('adduser', data);
+                    this.setState({userAdded:true})
+                    this.clearState();
+                } catch (error) {
+                    if(error.response.status ===409)
+                        this.setState({duplicateEmail:true})
+                    console.log('error on add user', error);
+                }
             }
         } else
-            this.setState({status: -1})
+            this.setState({missingFields: true})
 
+    };
+
+    validateEmail = () => {
+        return emailRegex.test(this.state.email);
+
+    };
+
+    validatePassword = () => {
+        return passwordRegex.test(this.state.password);
     };
 
     clearState = () => {
@@ -57,7 +86,10 @@ export default class AddUser extends Component {
             email: "",
             role: "",
             password: "",
-            status: ""
+            wrongEmailFormatMessage: false,
+            wrongPasswordFormatMessage: false,
+            missingFields: false,
+            duplicateEmail:false
         });
     };
 
@@ -70,48 +102,60 @@ export default class AddUser extends Component {
     };
 
     render() {
+        const showHideEmailError = this.state.wrongEmailFormatMessage ? "text-danger display-block" : "display-none";
+        const showHidePasswordError = this.state.wrongPasswordFormatMessage ? "text-danger display-block" : "display-none";
+        const showHideFieldsMissing = this.state.missingFields ? "text-danger display-block" : "display-none";
+        const userAdded = this.state.userAdded ? "text-success display-block bold" : "display-none";
+        const duplicateEmail = this.state.duplicateEmail ? "text-danger display-block" : "display-none";
         return (
             <div className='container'>
                 <h1 className="text-center">Add New User</h1>
                 <form className="container">
-                    <div className="form-group">
-                        <Input
-                            label="Username"
-                            type="username"
-                            name="username"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <Input
-                            label="Email"
-                            type="email"
-                            name="email"
-                        />
-                    </div>
-                    <div className="form-group">
-                        <Input
-                            label="Password"
-                            type="password"
-                            name="password"
-                        />
-                    </div>
-
-                    {this.state.status === 403 && <small>password or mail are not in the right format</small>}
-                    <div className="form-group">
-                        <Select
-                            label="Role"
-                            options={[{key: "Empty", value: ""}, {key: "admin", value: "Admin"}, {
-                                key: "readonly",
-                                value: "Read Only"
-                            }]}
-                            name="role"
-                            defaultValue="empty"
-                            className="form-control"
-                            onChange={this.handleChange}/>
-                    </div>
-                    <button type="button" onClick={this.handleAdd}
-                            className="btn btn-outline-info btn-rounded btn-block z-depth-0 my-4 waves-effect">Add
-                    </button>
+                    <Input
+                        label="Username"
+                        type="username"
+                        name="username"
+                        change={this.handleChange}
+                    />
+                    <Input
+                        label="Email"
+                        type="email"
+                        name="email"
+                        change={this.handleChange}
+                    />
+                    <small className={showHideEmailError}>Email not in the right format</small>
+                    <Input
+                        label="Password"
+                        type="password"
+                        name="password"
+                        change={this.handleChange}
+                        tooltip={"For a valid password:\n" +
+                        "\t*The password must contain at least 1 lowercase alphabetical character\n" +
+                        "\t*The password must contain at least 1 uppercase alphabetical character\n" +
+                        "\t*The password must contain at least 1 numeric character\n" +
+                        "\t*The password must contain at least one special character\n" +
+                        "\t*The password must be eight characters or longer"}
+                    />
+                    <small className={showHidePasswordError}>password not in the right format</small>
+                    <Select
+                        label="Role"
+                        options={[{key: "Empty", value: ""}, {key: "admin", value: "Admin"}, {
+                            key: "readonly",
+                            value: "Read Only"
+                        }]}
+                        name="role"
+                        defaultValue={this.state.role ? this.state.role : "empty"}
+                        className="form-control rounded"
+                        onChange={this.handleChange}/>
+                    <p className={showHideFieldsMissing}>Please fill All Fields!</p>
+                    <p className={duplicateEmail}>A User With this Email is already in the system!</p>
+                    <p className={userAdded}>User Added Successfully!</p>
+                    <Button
+                        type={"button"}
+                        onClick={this.handleAdd}
+                        value={"Add"}
+                        className={"btn btn-info btn-rounded btn-block z-depth-0 my-4 waves-effect"}
+                    />
                 </form>
             </div>
         )

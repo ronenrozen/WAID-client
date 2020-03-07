@@ -4,6 +4,7 @@ import AddUser from './AddUser'
 import userAxios from "./userAxios";
 import Modal from '../Modal/Modal'
 import EditUser from "./EditUser";
+
 class Users extends Component {
 
     constructor(props) {
@@ -11,7 +12,7 @@ class Users extends Component {
         this.state = {
             usersList: [],
             show: false,
-            currentUser:{}
+            currentUser: {}
         }
     }
 
@@ -26,11 +27,11 @@ class Users extends Component {
     };
 
     showModal = () => {
-        this.setState({ show: true });
+        this.setState({show: true});
     };
 
     hideModal = () => {
-        this.setState({ show: false });
+        this.setState({show: false, currentUser: {}});
     };
 
     createTable = (user) => {
@@ -44,7 +45,6 @@ class Users extends Component {
     };
 
     handleEdit = (user) => {
-        console.log("Edit", user);
         this.setState({currentUser: user});
         this.showModal()
     };
@@ -66,7 +66,7 @@ class Users extends Component {
                     {this.state.usersList && <tbody>{this.state.usersList.map(user => this.createTable(user))}</tbody>}
                 </table>
                 <Modal show={this.state.show} handleClose={this.hideModal}>
-                    <EditUser handleClose={this.hideModal}  user={this.state.currentUser}/>
+                    <EditUser handleClose={this.hideModal} user={this.state.currentUser}/>
                 </Modal>
             </div>
         )

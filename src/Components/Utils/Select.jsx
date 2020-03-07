@@ -3,7 +3,7 @@ import Option from "./Option";
 
 class Select extends Component {
 
-    addOption = (option,i) => {
+    addOption = (option, i) => {
         return <Option
             key={i}
             value={option["key"]}
@@ -11,12 +11,12 @@ class Select extends Component {
     };
 
     render() {
-        const {label, options, name, defaultValue,className} = this.props;
+        const {label, options, name, defaultValue, className} = this.props;
         return (
-            <div>
+            <div className="form-group">
                 <label>{label}</label>
-                <select className={className} name={name} onChange={this.props.onChange} defaultValue={defaultValue}>
-                    {this.props.options && options.map((option,i) => this.addOption(option,i))}
+                <select className={className} name={name} onChange={this.props.onChange} value={defaultValue}>
+                    {this.props.options && options.map((option, i) => this.addOption(option, i))}
                 </select>
             </div>
         );

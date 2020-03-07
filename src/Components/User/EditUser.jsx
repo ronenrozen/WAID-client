@@ -2,14 +2,15 @@ import React, {Component} from 'react'
 import userAxios from './userAxios';
 import Button from "../Utils/Button";
 import Input from "../Utils/Input";
+import Select from "../Utils/Select";
 
 export default class EditUser extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: "",
-            email: "",
-            role: "",
+            username: props.user.username,
+            email: props.user.email,
+            role: props.user.role,
             status: ""
         }
     }
@@ -17,15 +18,14 @@ export default class EditUser extends Component {
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
-        })
+        });
     };
 
     handleDelete = async () => {
-        console.log("HandleDelete", this.props.id);
         try {
-            const {status} = await userAxios.delete(`/delete/${this.props.id}`);
+            const {status} = await userAxios.delete(`/delete/${this.props.user.id}`);
             if (status) {
-                this.setState({status: 200});
+                this.props.handleClose()
             } else {
                 this.setState({status: 500});
             }
@@ -35,7 +35,6 @@ export default class EditUser extends Component {
     };
 
     render() {
-        this.setState({id:this.props.id});
         return (
             <>
                 <div className={"container"}>
@@ -47,24 +46,26 @@ export default class EditUser extends Component {
                             label="Username"
                             type="username"
                             name="username"
-                            value={this.props.user.username}
+                            value={this.state.username}
+                            change={this.handleChange}
                         />
                         <Input
                             label="Email"
                             type="email"
                             name="email"
-                            value={this.props.user.email}
+                            value={this.state.email}
+                            change={this.handleChange}
                         />
-                        <small id="emailHelp" className="form-text text-muted">We'll never share your email with
-                            anyone else.</small>
-                        <div className="form-group">
-                            <label htmlFor="RoleLabel">Role</label>
-                            <select className="form-control" name={"role"} onChange={this.handleChange}
-                                    value={this.state.role ? this.state.role : this.props.user.role}>
-                                <option>Admin</option>
-                                <option>Read Only</option>
-                            </select>
-                        </div>
+                        <Select
+                            label="Role"
+                            options={[
+                                {key: "0", value: "Admin"},
+                                {key: "1", value: "Read Only"}
+                            ]}
+                            name="role"
+                            defaultValue={this.state.role}
+                            className="form-control"
+                            onChange={this.handleChange}/>
                     </form>
                 </div>
                 <div className="modal-footer">
@@ -84,7 +85,8 @@ export default class EditUser extends Component {
                         className={"btn btn-primary"}/>
                 </div>
             </>
-        );
+        )
+            ;
     }
 }
 

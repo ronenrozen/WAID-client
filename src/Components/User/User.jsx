@@ -4,7 +4,6 @@ import Button from '../Utils/Button'
 
 class User extends Component {
     handleEdit = () => {
-        console.log("Clicked user props" , this.props);
         const {edit} = this.props;
         edit(this.props)
 
@@ -31,7 +30,7 @@ class User extends Component {
                     <Button
                         type={"button"}
                         value={"Edit"}
-                        className={"btn btn-primary"}
+                        className={"btn btn-primary btn-rounded"}
                         dataToggle={"modal"}
                         dataTarget={"#staticBackdrop"}
                         onClick={this.handleEdit}/>
