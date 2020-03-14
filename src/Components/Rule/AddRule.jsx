@@ -1,78 +1,98 @@
-import React, { Component } from 'react'
-const axios = require('axios')
+import React, {Component} from 'react'
+import ruleAxios from './ruleAxios'
+import Input from '../Utils/Input'
+import Select from '../Utils/Select'
+import Button from "../Utils/Button";
+
+
 export default class AddRule extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             rule: "",
             type: "",
             action: "",
-            status: ""
+            status: "",
+            missingFields: false,
+            ruleAdded: false
         }
     }
+
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
-    }
+    };
 
-    handleAdd = () => {
+    handleAdd = async () => {
+        this.setState({
+            missingFields: false,
+            ruleAdded: false
+        });
+
+
         if (this.state.rule !== "" && this.state.type !== "" && this.state.action !== "") {
             let data = {
-                "rule": this.state.rule,
-                "type": this.state.type,
-                "action": this.state.action,
+                rule: this.state.rule,
+                type: this.state.type,
+                action: this.state.action
+            };
+            try {
+                await ruleAxios.post('addrule', data);
+                this.setState({ruleAdded: true});
+                this.props.handleAdd(data);
+            } catch (error) {
+                console.log('error on add rule', error);
             }
-            axios.post('http://localhost:5000/rule/addrule', data)
-                .then(this.clearState()).catch(error => {
-                    console.log("error", error);
-                    this.setState({ status: error.status })
-                })
-        }
-        else
-            this.setState({ status: -1 })
+        } else
+            this.setState({missingFields: true})
 
-    }
+    };
 
-    clearState = () => {
-        this.setState({
-            rule: "",
-            type: "",
-            action: "",
-            status: ""
-        })
-    }
-
-    convertRoleToInt = () => {
-        let role = this.state.role;
-        if (role === "admin")
-            return 0
-        else
-            return 1
-    }
 
     render() {
+        const showHideFieldsMissing = this.state.missingFields ? "text-danger display-block" : "display-none";
+        const ruleAdded = this.state.ruleAdded ? "text-success display-block bold" : "display-none";
         return (
-            <div className='conatiner'>
+            <div className='container'>
                 <h1 className="text-center">Add New Rule</h1>
                 <form className="container">
-                    <div className="form-group">
-                        <label htmlFor="RuleLabel">Rule Regex</label>
-                        <input type="rule" className="form-control" aria-describedby="RuleHelp" name={"rule"} onChange={this.handleChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="EmailLabel">Email address</label>
-                        <input type="email" className="form-control" aria-describedby="emailHelp" name={"type"} onChange={this.handleChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="RoleLabel">Action</label>
-                        <select className="form-control" name={"role"} onChange={this.handleChange} defaultValue={'empty'}>
-                            <option value="empty"></option>
-                            <option value="allow">Allow</option>
-                            <option value="block">Block</option>
-                        </select>
-                    </div>
-                    <button type="button" onClick={this.handleAdd} className="btn btn-outline-info btn-rounded btn-block z-depth-0 my-4 waves-effect">Add</button>
+                    <Input
+                        label="Rule"
+                        type="text"
+                        name="rule"
+                        change={this.handleChange}
+                    />
+                    <Select
+                        label="Type"
+                        options={[
+                            {key: "", value: ""},
+                            {key: "0", value: "SQL Injection"},
+                            {key: "1", value: "XSS"}
+                        ]}
+                        name="type"
+                        defaultValue={this.state.type ? this.state.type : ""}
+                        className="form-control"
+                        onChange={this.handleChange}/>
+                    <Select
+                        label="Action"
+                        options={[
+                            {key: "", value: ""},
+                            {key: "0", value: "Allow"},
+                            {key: "1", value: "Blocked"}
+                        ]}
+                        name="action"
+                        defaultValue={this.state.action ? this.state.action : ""}
+                        className="form-control"
+                        onChange={this.handleChange}/>
+                    <p className={showHideFieldsMissing}>Please fill All Fields!</p>
+                    <p className={ruleAdded}>User Added Successfully!</p>
+                    <Button
+                        type={"button"}
+                        onClick={this.handleAdd}
+                        value={"Add"}
+                        className={"btn btn-info btn-rounded btn-block z-depth-0 my-4 waves-effect"}
+                    />
                 </form>
             </div>
         )

@@ -5,7 +5,7 @@ import Select from '../Utils/Select'
 import Button from "../Utils/Button";
 
 const passwordRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-const emailRegex = new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g);
+const emailRegex = new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/);
 export default class AddUser extends Component {
     constructor(props) {
         super(props);
@@ -37,7 +37,9 @@ export default class AddUser extends Component {
             userAdded:false,
             duplicateEmail:false
         });
+
         let isValid = true;
+
         if (this.state.username !== "" && this.state.email !== "" && this.state.password !== "" && this.state.role !== "") {
             if (!this.validateEmail()) {
                 isValid = false;
@@ -57,8 +59,8 @@ export default class AddUser extends Component {
                 };
                 try {
                     await userAxios.post('adduser', data);
-                    this.setState({userAdded:true})
-                    this.clearState();
+                    this.setState({userAdded:true});
+                    this.props.handleAdd(data);
                 } catch (error) {
                     if(error.response.status ===409)
                         this.setState({duplicateEmail:true})
@@ -72,7 +74,6 @@ export default class AddUser extends Component {
 
     validateEmail = () => {
         return emailRegex.test(this.state.email);
-
     };
 
     validatePassword = () => {
@@ -139,10 +140,11 @@ export default class AddUser extends Component {
                     <small className={showHidePasswordError}>password not in the right format</small>
                     <Select
                         label="Role"
-                        options={[{key: "Empty", value: ""}, {key: "admin", value: "Admin"}, {
-                            key: "readonly",
-                            value: "Read Only"
-                        }]}
+                        options={[
+                            {key: "Empty", value: ""},
+                            {key: "admin", value: "Admin"},
+                            {key: "readonly",value: "Read Only"}
+                            ]}
                         name="role"
                         defaultValue={this.state.role ? this.state.role : "empty"}
                         className="form-control rounded"

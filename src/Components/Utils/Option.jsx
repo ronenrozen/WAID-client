@@ -10,7 +10,6 @@ class Option extends Component {
     }
 
     handleChange = ({target}) => {
-        console.log(target.value);
         this.setState({value: target.value})
     };
 

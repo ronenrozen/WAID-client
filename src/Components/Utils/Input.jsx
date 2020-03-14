@@ -1,18 +1,6 @@
 import React, {Component} from 'react';
 
 export default class Input extends Component {
-    // constructor(props) {
-    //     super(props);
-    //     console.log("Input",props);
-    //     this.state = {
-    //         value: ""
-    //     }
-    // }
-
-    // handleChange = (e) => {
-    //     this.props.change(e);
-    //     this.setState({value: e.target.value})
-    // };
 
     render() {
         const {label, type, name,value,tooltip} = this.props;

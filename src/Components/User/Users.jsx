@@ -12,10 +12,11 @@ class Users extends Component {
         this.state = {
             usersList: [],
             show: false,
-            currentUser: {}
-        }
-    }
+            currentUser: {},
+            lastAddedUSer: {}
+        };
 
+    }
 
     componentDidMount = async () => {
         try {
@@ -31,7 +32,7 @@ class Users extends Component {
     };
 
     hideModal = () => {
-        this.setState({show: false, currentUser: {}});
+        this.setState({show: false, currentUser: {}}, ()=> this.updateTable());
     };
 
     createTable = (user) => {
@@ -49,14 +50,63 @@ class Users extends Component {
         this.showModal()
     };
 
+    handleAdd = (data) => {
+        this.setState({lastAddedUSer: data},()=> this.updateTable());
+
+    };
+
+    updateTable = async () => {
+        try {
+            const {data} = await userAxios.get(`/getall`);
+            this.setState({usersList: data})
+        } catch (error) {
+            console.log('error on delete', error);
+        }
+    };
+    handleDelete = async () => {
+        try {
+            const {status} = await userAxios.delete(`/delete/${this.state.currentUser.id}`);
+            if (status) {
+                this.hideModal()
+            } else {
+                this.setState({status: 500});
+            }
+        } catch (error) {
+            console.log('error on delete', error);
+        }
+    };
+
+    handleCurrentUser = (e) => {
+        this.setState({
+            currentUser: {
+                ...this.state.currentUser,
+                [e.target.name]: e.target.value
+            }
+        });
+    };
+
+    handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const {status} = await userAxios.put(`/update/${this.state.currentUser.id}`, this.state.currentUser);
+            if (status) {
+                this.hideModal()
+            } else {
+                this.setState({status: 500});
+            }
+        } catch (error) {
+            console.log('error on delete', error);
+        }
+    };
+
     render() {
         return (
             <div>
-                <AddUser/>
+                <AddUser handleAdd={this.handleAdd}/>
                 <table className="container table table-striped mt-5">
                     <thead className="thead-dark">
                     <tr>
-                        <th>Id</th>
+                        <th>ID</th>
                         <th>Username</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -66,7 +116,8 @@ class Users extends Component {
                     {this.state.usersList && <tbody>{this.state.usersList.map(user => this.createTable(user))}</tbody>}
                 </table>
                 <Modal show={this.state.show} handleClose={this.hideModal}>
-                    <EditUser handleClose={this.hideModal} user={this.state.currentUser}/>
+                    <EditUser handleClose={this.hideModal} handleCurrentUser={this.handleCurrentUser}
+                              user={this.state.currentUser} delete={this.handleDelete} update={this.handleUpdate}/>
                 </Modal>
             </div>
         )

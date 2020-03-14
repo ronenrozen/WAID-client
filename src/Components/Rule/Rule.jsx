@@ -1,25 +1,35 @@
-import React from 'react';
-import EditRule from './EditRule';
+import React, {Component} from 'react';
+import Button from '../Utils/Button'
 
-// const replaceIntToStr= (roleId) =>{
-//     if (roleId === 1)
-//         return "Read Only"
-//     else
-//         return "Admin"
-// }
+class Rule extends Component {
+    handleEdit = () => {
+        const {edit} = this.props;
+        edit(this.props)
 
-const Rule = ({ id, rule, type, action }) => {
-    // role = replaceIntToStr(role)
-  
-    return (
-        <tr>
-            <td>{id}</td>
-            <td>{rule}</td>
-            <td>{type}</td>
-            <td>{action}</td>
-            <td><EditRule id={id} rule={rule} type={type} action={action} /></td>
-        </tr>
-    );
+    };
+
+    render() {
+        const {id, rule, type, action} = this.props;
+
+        return (
+            <tr>
+                <td>{id}</td>
+                <td>{rule}</td>
+                <td>{type}</td>
+                <td>{action}</td>
+                <td>
+                    <Button
+                        type={"button"}
+                        value={"Edit"}
+                        className={"btn btn-primary btn-rounded"}
+                        dataToggle={"modal"}
+                        dataTarget={"#staticBackdrop"}
+                        onClick={this.handleEdit}/>
+                </td>
+            </tr>
+        );
+    }
 }
+
 
 export default Rule;
