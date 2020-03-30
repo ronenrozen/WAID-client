@@ -23,7 +23,7 @@ class Rules extends Component {
             const {data} = await ruleAxios.get(`/getall`);
             this.setState({rulesLists: data})
         } catch (error) {
-            console.log('error on delete', error);
+            console.log('error on getting rule list', error);
         }
     };
 
