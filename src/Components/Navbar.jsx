@@ -5,9 +5,9 @@ export default class Navbar extends Component {
         return (
             <div className="mb-4">
                 <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
-                    <Link className="navbar-brand"to ={'/'}>Waid</Link>
+                    <Link className="navbar-brand" to ={'/'}>Waid</Link>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span className="navbar-toggler-icon"></span>
+                        <span className="navbar-toggler-icon"/>
                     </button>
 
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
@@ -20,9 +20,6 @@ export default class Navbar extends Component {
                             </li>
                             <li className="nav-item">
                                 <Link className="nav-link" to={"/rules"}>Rules</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to={"/about"}>About</Link>
                             </li>
                         </ul>
                     </div>

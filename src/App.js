@@ -5,10 +5,11 @@ import Rules from './Components/Rule/Rules'
 import Navbar from './Components/Navbar'
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import Settings from './Components/Settings/Settings'
-import About from './Components/About/About'
 import './App.css'
 
+
 function App() {
+
     return (
         <Router>
             <div className="App">
@@ -17,9 +18,6 @@ function App() {
                 </header>
                 <div className="App-body">
                     <Switch>
-                        <Route path="/about">
-                            <About/>
-                        </Route>
                         <Route path="/rules">
                             <Rules/>
                         </Route>

@@ -7,7 +7,7 @@ export default class Input extends Component {
         return (
             <div className="form-group">
                 <label>{label}</label>
-                <input type={type} className="form-control rounded" name={name} onChange={this.props.change}
+                <input type={type} disabled={this.props.disabled} className="form-control rounded" name={name} onChange={this.props.change}
                        value={value} title={tooltip}/>
             </div>
         );

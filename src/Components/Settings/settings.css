@@ -1,4 +1,12 @@
-.active{
+.active {
     margin-top: 10em;
 }
-tbody{width: auto}
+
+tbody {
+    width: auto
+}
+
+td:first-child {
+    vertical-align: middle !important;
+    font-size: 125%;
+}
