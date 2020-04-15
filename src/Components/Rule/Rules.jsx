@@ -4,6 +4,8 @@ import AddRule from './AddRule'
 import ruleAxios from "./ruleAxios";
 import Modal from '../Modal/Modal'
 import EditRule from "./EditRule";
+import {Redirect} from "react-router-dom";
+import axios from "axios";
 
 class Rules extends Component {
 
@@ -18,14 +20,23 @@ class Rules extends Component {
 
     }
 
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
+
     componentDidMount = async () => {
         try {
-            const {data} = await ruleAxios.get(`/getall`);
+            const {data} = await ruleAxios.get(`/getall`, {
+                cancelToken: this.source.token
+            });
             this.setState({rulesLists: data})
         } catch (error) {
             console.log('error on getting rule list', error);
         }
     };
+
+    componentWillUnmount() {
+        this.source.cancel("Operation canceled by the user.");
+    }
 
     showModal = () => {
         this.setState({show: true});
@@ -99,6 +110,9 @@ class Rules extends Component {
     };
 
     render() {
+        if (!this.props.state.isLogin) {
+            return <Redirect to={'./'}/>
+        }
         return (
             <div>
                 <AddRule handleAdd={this.handleAdd}/>

@@ -1,59 +1,85 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, {Component} from "react";
 import "./login.css";
+import userAxios from '../User/userAxios';
+import { Redirect } from "react-router-dom"
+
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userName: "",
-      password: "",
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: "",
+            password: "",
+            wrongEmailOrPassword: false,
+            redirect: false
+        };
+    }
+
+    inputChange = ({target: {name, value}}) => {
+        this.setState({
+            [name]: value,
+        });
     };
-  }
 
-  inputChange = ({ target: { name, value } }) => {
-    this.setState({
-      [name]: value,
-    });
-  };
+    onSubmit = async (e) => {
+        e.preventDefault();
+        this.setState({wrongEmailOrPassword: false});
+        let userInfo = {
+            email: this.state.email,
+            password: this.state.password
+        };
+        try {
+            const {data} = await userAxios.post('login', userInfo);
+            this.props.handleLogin(data);
+            this.setState({redirect: true});
+        } catch (error) {
+            if (error.response.status === 500) {
+                this.setState({wrongEmailOrPassword: true});
+            }
+            console.log('error on login', error);
+        }
+    };
 
-  onSubmit = (e) => {
-    e.preventDefault();
-    console.log(this.state);
-  };
+    render() {
+        if (this.state.redirect) {
+            return <Redirect to={'./control-panel'}/>
+        }
+        const showEmailAndPasswordError = this.state.wrongEmailOrPassword ? "text-danger display-block" : "display-none";
+        const showInputErrors = this.state.wrongEmailOrPassword ? "form-control is-invalid" : "form-control";
 
-  render() {
-    return (
-      <div className={"wrapperContainer"}>
-        <div className="innerContainer">
-          <h1 className={"header"}>Welcome</h1>
-          <form onSubmit={this.onSubmit}>
-            <div className={"input"}>
-              <i className={"fa fa-user"} />
-              <input
-                type="text"
-                placeholder={"User Name"}
-                name={"userName"}
-                onChange={this.inputChange}
-              />
+        return (
+            <div className={"wrapperContainer"}>
+                <div className="innerContainer">
+                    <h1 className={"header"}>Welcome</h1>
+                    <form onSubmit={this.onSubmit}>
+                        <div className={"input"}>
+                            <i className={"fa fa-user"}/>
+                            <input
+                                className={showInputErrors}
+                                type="text"
+                                placeholder={"Email"}
+                                name={"email"}
+                                onChange={this.inputChange}
+                            />
+                        </div>
+                        <div className={"input"}>
+                            <i className={"fa fa-unlock"}/>
+                            <input
+                                className={showInputErrors}
+                                type="password"
+                                placeholder={"Password"}
+                                name={"password"}
+                                onChange={this.inputChange}
+                            />
+                        </div>
+                        <small className={showEmailAndPasswordError}>Email or Password is incorrect please try
+                            again</small>
+                        <input type={"submit"} value={"Login"}/>
+                    </form>
+                </div>
             </div>
-            <div className={"input"}>
-              <i className={"fa fa-unlock"} />
-              <input
-                type="password"
-                placeholder={"Password"}
-                name={"password"}
-                onChange={this.inputChange}
-              />
-            </div>
-            <Link to={"/control-panel"} className={"text-center"}>
-              <input type={"submit"} value={"Login"} />
-            </Link>
-          </form>
-        </div>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 export default Login;

@@ -6,6 +6,7 @@ import './settings.css'
 import Select from "../Utils/Select";
 import Input from "../Utils/Input";
 import Button from "../Utils/Button";
+import {Redirect} from "react-router-dom";
 
 class Settings extends Component {
 
@@ -27,7 +28,7 @@ class Settings extends Component {
                 isActive: data["is_active"] === 'True',
                 isClient: data["is_client"] === 'True',
                 serverUrl: data["server_url"],
-            },()=> console.log(this.state))
+            })
         } catch (error) {
             console.log('error on getting is active', error);
         }
@@ -100,12 +101,15 @@ class Settings extends Component {
     };
 
     render() {
+        if (!this.props.state.isLogin) {
+            return <Redirect to={'./'}/>
+        }
         const showServerUrl = !this.state.isClient;
         const isActiveIcon =  this.state.isActive ? faToggleOn : faToggleOff;
         return (
             <div>
                 <div className="header text-center">
-                    <h1>WAID - Setting Panel</h1>
+                    <h1>WAID - Web Application Intrusion Detector</h1>
                 </div>
                 <table className="container table table-striped mt-5">
                     <thead className="thead-dark">

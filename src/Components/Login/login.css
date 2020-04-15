@@ -21,6 +21,7 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    min-height: fit-content;
 }
 .header {
     padding: 5%;

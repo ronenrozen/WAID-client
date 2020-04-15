@@ -4,6 +4,8 @@ import AddUser from './AddUser'
 import userAxios from "./userAxios";
 import Modal from '../Modal/Modal'
 import EditUser from "./EditUser";
+import {Redirect} from "react-router-dom";
+import axios from "axios";
 
 class Users extends Component {
 
@@ -15,24 +17,32 @@ class Users extends Component {
             currentUser: {},
             lastAddedUSer: {}
         };
-
     }
+
+    CancelToken = axios.CancelToken;
+    source = this.CancelToken.source();
 
     componentDidMount = async () => {
         try {
-            const {data} = await userAxios.get(`/getall`);
+            const {data} = await userAxios.get(`/getall`, {
+                cancelToken: this.source.token
+            });
             this.setState({usersList: data})
         } catch (error) {
-            console.log('error on delete', error);
+            console.log('error on retrieving all Users', error);
         }
     };
+
+    componentWillUnmount() {
+        this.source.cancel("Operation canceled by the user.");
+    }
 
     showModal = () => {
         this.setState({show: true});
     };
 
     hideModal = () => {
-        this.setState({show: false, currentUser: {}}, ()=> this.updateTable());
+        this.setState({show: false, currentUser: {}}, () => this.updateTable());
     };
 
     createTable = (user) => {
@@ -51,7 +61,7 @@ class Users extends Component {
     };
 
     handleAdd = (data) => {
-        this.setState({lastAddedUSer: data},()=> this.updateTable());
+        this.setState({lastAddedUSer: data}, () => this.updateTable());
 
     };
 
@@ -63,6 +73,7 @@ class Users extends Component {
             console.log('error on delete', error);
         }
     };
+
     handleDelete = async () => {
         try {
             const {status} = await userAxios.delete(`/delete/${this.state.currentUser.id}`);
@@ -100,6 +111,9 @@ class Users extends Component {
     };
 
     render() {
+        if (!this.props.state.isLogin) {
+            return <Redirect to={'./'}/>
+        }
         return (
             <div>
                 <AddUser handleAdd={this.handleAdd}/>
