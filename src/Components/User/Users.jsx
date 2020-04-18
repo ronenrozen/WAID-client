@@ -6,7 +6,7 @@ import Modal from '../Modal/Modal'
 import EditUser from "./EditUser";
 import {Redirect} from "react-router-dom";
 import axios from "axios";
-
+import './Users.css';
 class Users extends Component {
 
     constructor(props) {
@@ -117,7 +117,7 @@ class Users extends Component {
         return (
             <div>
                 <AddUser handleAdd={this.handleAdd}/>
-                <table className="container table table-striped mt-5">
+                <table className="container table table-striped table-dark mt-5">
                     <thead className="thead-dark">
                     <tr>
                         <th>ID</th>

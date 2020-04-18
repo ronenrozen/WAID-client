@@ -6,7 +6,7 @@ import Modal from '../Modal/Modal'
 import EditRule from "./EditRule";
 import {Redirect} from "react-router-dom";
 import axios from "axios";
-
+import './Rules.css';
 class Rules extends Component {
 
     constructor(props) {
@@ -116,7 +116,7 @@ class Rules extends Component {
         return (
             <div>
                 <AddRule handleAdd={this.handleAdd}/>
-                <table className="container table table-striped mt-5">
+                <table className="container table table-striped table-dark mt-5">
                     <thead className="thead-dark">
                     <tr>
                         <th>Id</th>

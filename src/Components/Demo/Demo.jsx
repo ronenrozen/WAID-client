@@ -12,7 +12,7 @@ class Demo extends Component {
 
     handleClick = async () => {
         try {
-            let response = demoAxios.post("/?" + this.state.attack);
+            let response = demoAxios.get("/?" + this.state.attack);
             console.log("demo response", response);
         } catch (error) {
             console.log('error on demo', error);

@@ -63,7 +63,7 @@ export default class AddUser extends Component {
                     this.props.handleAdd(data);
                 } catch (error) {
                     if(error.response.status ===409)
-                        this.setState({duplicateEmail:true})
+                        this.setState({duplicateEmail:true});
                     console.log('error on add user', error);
                 }
             }
@@ -110,8 +110,8 @@ export default class AddUser extends Component {
         const duplicateEmail = this.state.duplicateEmail ? "text-danger display-block" : "display-none";
         return (
             <div className='container'>
-                <h1 className="text-center">Add New User</h1>
-                <form className="container">
+                <h1 className="text-center mb-3">Add New User</h1>
+                <form className="container form-inline">
                     <Input
                         label="Username"
                         type="username"
@@ -156,7 +156,7 @@ export default class AddUser extends Component {
                         type={"button"}
                         onClick={this.handleAdd}
                         value={"Add"}
-                        className={"btn btn-info btn-rounded btn-block z-depth-0 my-4 waves-effect"}
+                        className={"btn btn-info btn-rounded btn-sm mr-2 ml-2 z-depth-0 my-4 waves-effect"}
                     />
                 </form>
             </div>

@@ -55,8 +55,8 @@ export default class AddRule extends Component {
         const ruleAdded = this.state.ruleAdded ? "text-success display-block bold" : "display-none";
         return (
             <div className='container'>
-                <h1 className="text-center">Add New Rule</h1>
-                <form className="container">
+                <h1 className="text-center mb-3">Add New Rule</h1>
+                <form className="container form-inline">
                     <Input
                         label="Rule"
                         type="text"
@@ -91,7 +91,7 @@ export default class AddRule extends Component {
                         type={"button"}
                         onClick={this.handleAdd}
                         value={"Add"}
-                        className={"btn btn-info btn-rounded btn-block z-depth-0 my-4 waves-effect"}
+                        className={"btn btn-info btn-rounded btn-sm mr-2 ml-2 z-depth-0 my-4 waves-effect"}
                     />
                 </form>
             </div>
